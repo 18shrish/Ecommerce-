@@ -225,17 +225,15 @@ public class OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Order item not found with id: " + orderItemSeqId));
 
-        // Verify the item belongs to the specified order
+        // Optional: verify order ID in DB
         if (!item.getOrder().getOrderId().equals(orderId)) {
             throw new ResourceNotFoundException("Item does not belong to order " + orderId);
         }
 
-        // Remove item from order (orphanRemoval=true will delete it)
-        item.getOrder().removeOrderItem(item);
-        
-        // Save the order to trigger cascade delete
-        orderHeaderRepository.save(item.getOrder());
+        // Delete directly
+        orderItemRepository.delete(item);
     }
+
 
     // ================= MAPPERS =================
     private OrderResponse mapToOrderResponse(OrderHeader order) {
